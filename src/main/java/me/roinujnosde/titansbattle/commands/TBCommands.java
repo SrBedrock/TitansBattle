@@ -211,11 +211,39 @@ public class TBCommands extends BaseCommand {
         }
 
         Game game = currentGame.get();
-        if (game.getConfig().isGroupMode()) {
-            sender.sendMessage(plugin.getLang("game_status_group", game, Helper.buildStringFrom(game.getGroupParticipants())));
-        } else {
-            sender.sendMessage(plugin.getLang("game_status", game, game.getParticipants().size()));
+        
+        // Calculate elapsed time and max duration
+        long battleStartTime = game.getBattleStartTime();
+        long elapsedSeconds = 0;
+        if (battleStartTime > 0) {
+            elapsedSeconds = (System.currentTimeMillis() - battleStartTime) / 1000;
         }
+        long maxDurationSeconds = game.getConfig().getExpirationTime() != null ? game.getConfig().getExpirationTime() : 0L;
+        long remainingSeconds = Math.max(0, maxDurationSeconds - elapsedSeconds);
+        
+        // Get time components
+        long[] elapsedComponents = getTimeComponents(elapsedSeconds);
+        long[] maxComponents = getTimeComponents(maxDurationSeconds);
+        long[] remainingComponents = getTimeComponents(remainingSeconds);
+        
+        if (game.getConfig().isGroupMode()) {
+            sender.sendMessage(plugin.getLang("game_status_group", game, Helper.buildStringFrom(game.getGroupParticipants()), 
+                elapsedComponents[0], elapsedComponents[1], elapsedComponents[2],
+                maxComponents[0], maxComponents[1], maxComponents[2],
+                remainingComponents[0], remainingComponents[1], remainingComponents[2]));
+        } else {
+            sender.sendMessage(plugin.getLang("game_status", game, game.getParticipants().size(),
+                elapsedComponents[0], elapsedComponents[1], elapsedComponents[2],
+                maxComponents[0], maxComponents[1], maxComponents[2],
+                remainingComponents[0], remainingComponents[1], remainingComponents[2]));
+        }
+    }
+    
+    private long[] getTimeComponents(long totalSeconds) {
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+        return new long[]{hours, minutes, seconds};
     }
 
 }
