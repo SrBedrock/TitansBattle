@@ -218,7 +218,7 @@ public class TBCommands extends BaseCommand {
         if (battleStartTime > 0) {
             elapsedSeconds = (System.currentTimeMillis() - battleStartTime) / 1000;
         }
-        long maxDurationSeconds = game.getConfig().getExpirationTime();
+        long maxDurationSeconds = game.getConfig().getExpirationTime() != null ? game.getConfig().getExpirationTime() : 0L;
         long remainingSeconds = Math.max(0, maxDurationSeconds - elapsedSeconds);
         
         // Get time components
