@@ -211,11 +211,35 @@ public class TBCommands extends BaseCommand {
         }
 
         Game game = currentGame.get();
-        if (game.getConfig().isGroupMode()) {
-            sender.sendMessage(plugin.getLang("game_status_group", game, Helper.buildStringFrom(game.getGroupParticipants())));
-        } else {
-            sender.sendMessage(plugin.getLang("game_status", game, game.getParticipants().size()));
+        
+        // Calculate elapsed time and max duration
+        long battleStartTime = game.getBattleStartTime();
+        long elapsedSeconds = 0;
+        if (battleStartTime > 0) {
+            elapsedSeconds = (System.currentTimeMillis() - battleStartTime) / 1000;
         }
+        long maxDurationSeconds = game.getConfig().getExpirationTime();
+        
+        // Format times as HH:MM:SS
+        String elapsedTime = formatTime(elapsedSeconds);
+        String maxTime = formatTime(maxDurationSeconds);
+        
+        if (game.getConfig().isGroupMode()) {
+            sender.sendMessage(plugin.getLang("game_status_group", game, Helper.buildStringFrom(game.getGroupParticipants()), 
+                elapsedTime.split(":")[0], elapsedTime.split(":")[1], elapsedTime.split(":")[2],
+                maxTime.split(":")[0], maxTime.split(":")[1], maxTime.split(":")[2]));
+        } else {
+            sender.sendMessage(plugin.getLang("game_status", game, game.getParticipants().size(),
+                elapsedTime.split(":")[0], elapsedTime.split(":")[1], elapsedTime.split(":")[2],
+                maxTime.split(":")[0], maxTime.split(":")[1], maxTime.split(":")[2]));
+        }
+    }
+    
+    private String formatTime(long totalSeconds) {
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
 }
