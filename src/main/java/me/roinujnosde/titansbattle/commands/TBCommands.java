@@ -219,27 +219,31 @@ public class TBCommands extends BaseCommand {
             elapsedSeconds = (System.currentTimeMillis() - battleStartTime) / 1000;
         }
         long maxDurationSeconds = game.getConfig().getExpirationTime();
+        long remainingSeconds = Math.max(0, maxDurationSeconds - elapsedSeconds);
         
-        // Format times as HH:MM:SS
-        String elapsedTime = formatTime(elapsedSeconds);
-        String maxTime = formatTime(maxDurationSeconds);
+        // Get time components
+        long[] elapsedComponents = getTimeComponents(elapsedSeconds);
+        long[] maxComponents = getTimeComponents(maxDurationSeconds);
+        long[] remainingComponents = getTimeComponents(remainingSeconds);
         
         if (game.getConfig().isGroupMode()) {
             sender.sendMessage(plugin.getLang("game_status_group", game, Helper.buildStringFrom(game.getGroupParticipants()), 
-                elapsedTime.split(":")[0], elapsedTime.split(":")[1], elapsedTime.split(":")[2],
-                maxTime.split(":")[0], maxTime.split(":")[1], maxTime.split(":")[2]));
+                elapsedComponents[0], elapsedComponents[1], elapsedComponents[2],
+                maxComponents[0], maxComponents[1], maxComponents[2],
+                remainingComponents[0], remainingComponents[1], remainingComponents[2]));
         } else {
             sender.sendMessage(plugin.getLang("game_status", game, game.getParticipants().size(),
-                elapsedTime.split(":")[0], elapsedTime.split(":")[1], elapsedTime.split(":")[2],
-                maxTime.split(":")[0], maxTime.split(":")[1], maxTime.split(":")[2]));
+                elapsedComponents[0], elapsedComponents[1], elapsedComponents[2],
+                maxComponents[0], maxComponents[1], maxComponents[2],
+                remainingComponents[0], remainingComponents[1], remainingComponents[2]));
         }
     }
     
-    private String formatTime(long totalSeconds) {
+    private long[] getTimeComponents(long totalSeconds) {
         long hours = totalSeconds / 3600;
         long minutes = (totalSeconds % 3600) / 60;
         long seconds = totalSeconds % 60;
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        return new long[]{hours, minutes, seconds};
     }
 
 }
