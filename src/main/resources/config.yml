@@ -67,6 +67,9 @@ sounds:
 #Date format used on /tb winners command
 date-format: "dd/MM/yyyy"
 
+#Time format used on /tb status command (HH = hours, mm = minutes, ss = seconds)
+time-format: "HH:mm:ss"
+
 #Set how many lines should be displayed on those commands
 page-limit:
     help: 7
