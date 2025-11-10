@@ -211,7 +211,6 @@ public class TBCommands extends BaseCommand {
         }
 
         Game game = currentGame.get();
-        
         // Calculate elapsed time and max duration
         long battleStartTime = game.getBattleStartTime();
         long elapsedSeconds = 0;
