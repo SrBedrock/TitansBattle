@@ -221,29 +221,30 @@ public class TBCommands extends BaseCommand {
         long maxDurationSeconds = game.getConfig().getExpirationTime() != null ? game.getConfig().getExpirationTime() : 0L;
         long remainingSeconds = Math.max(0, maxDurationSeconds - elapsedSeconds);
         
-        // Get time components
-        long[] elapsedComponents = getTimeComponents(elapsedSeconds);
-        long[] maxComponents = getTimeComponents(maxDurationSeconds);
-        long[] remainingComponents = getTimeComponents(remainingSeconds);
+        // Format time strings using configured format
+        String timeFormat = configManager.getTimeFormat();
+        String elapsedTime = formatTime(elapsedSeconds, timeFormat);
+        String maxTime = formatTime(maxDurationSeconds, timeFormat);
+        String remainingTime = formatTime(remainingSeconds, timeFormat);
         
         if (game.getConfig().isGroupMode()) {
             sender.sendMessage(plugin.getLang("game_status_group", game, Helper.buildStringFrom(game.getGroupParticipants()), 
-                elapsedComponents[0], elapsedComponents[1], elapsedComponents[2],
-                maxComponents[0], maxComponents[1], maxComponents[2],
-                remainingComponents[0], remainingComponents[1], remainingComponents[2]));
+                elapsedTime, maxTime, remainingTime));
         } else {
             sender.sendMessage(plugin.getLang("game_status", game, game.getParticipants().size(),
-                elapsedComponents[0], elapsedComponents[1], elapsedComponents[2],
-                maxComponents[0], maxComponents[1], maxComponents[2],
-                remainingComponents[0], remainingComponents[1], remainingComponents[2]));
+                elapsedTime, maxTime, remainingTime));
         }
     }
     
-    private long[] getTimeComponents(long totalSeconds) {
+    private String formatTime(long totalSeconds, String format) {
         long hours = totalSeconds / 3600;
         long minutes = (totalSeconds % 3600) / 60;
         long seconds = totalSeconds % 60;
-        return new long[]{hours, minutes, seconds};
+        
+        return format
+            .replace("HH", String.format("%02d", hours))
+            .replace("mm", String.format("%02d", minutes))
+            .replace("ss", String.format("%02d", seconds));
     }
 
 }
