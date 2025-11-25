@@ -205,45 +205,45 @@ public class TBCommands extends BaseCommand {
     public void status(Player sender) {
         plugin.debug(String.format("%s used /tb status", sender.getName()));
         java.util.Optional<Game> currentGame = gameManager.getCurrentGame();
-        if (!currentGame.isPresent()) {
+        if (currentGame.isEmpty()) {
             sender.sendMessage(plugin.getLang("not-starting-or-started"));
             return;
         }
 
         Game game = currentGame.get();
-        // Calculate elapsed time and max duration
+
         long battleStartTime = game.getBattleStartTime();
         long elapsedSeconds = 0;
         if (battleStartTime > 0) {
             elapsedSeconds = (System.currentTimeMillis() - battleStartTime) / 1000;
         }
-        long maxDurationSeconds = game.getConfig().getExpirationTime() != null ? game.getConfig().getExpirationTime() : 0L;
-        long remainingSeconds = Math.max(0, maxDurationSeconds - elapsedSeconds);
-        
-        // Format time strings using configured format
+
+        Integer expiration = game.getConfig().getExpirationTime();
+        long maxDurationSeconds = (expiration != null) ? expiration : -1L; // -1 = sem limite / N/A
+        long remainingSeconds = (maxDurationSeconds < 0) ? -1L : Math.max(0, maxDurationSeconds - elapsedSeconds);
+
         String timeFormat = configManager.getTimeFormat();
         String elapsedTime = formatTime(elapsedSeconds, timeFormat);
-        String maxTime = formatTime(maxDurationSeconds, timeFormat);
-        String remainingTime = formatTime(remainingSeconds, timeFormat);
-        
+        String maxTime = (maxDurationSeconds < 0) ? "N/A" : formatTime(maxDurationSeconds, timeFormat);
+        String remainingTime = (remainingSeconds < 0) ? "N/A" : formatTime(remainingSeconds, timeFormat);
+
         if (game.getConfig().isGroupMode()) {
-            sender.sendMessage(plugin.getLang("game_status_group", game, Helper.buildStringFrom(game.getGroupParticipants()), 
-                elapsedTime, maxTime, remainingTime));
+            sender.sendMessage(plugin.getLang("game_status_group", game, Helper.buildStringFrom(game.getGroupParticipants()),
+                    elapsedTime, maxTime, remainingTime));
         } else {
             sender.sendMessage(plugin.getLang("game_status", game, game.getParticipants().size(),
-                elapsedTime, maxTime, remainingTime));
+                    elapsedTime, maxTime, remainingTime));
         }
     }
-    
+
     private String formatTime(long totalSeconds, String format) {
         long hours = totalSeconds / 3600;
         long minutes = (totalSeconds % 3600) / 60;
         long seconds = totalSeconds % 60;
-        
-        return format
-            .replace("HH", String.format("%02d", hours))
-            .replace("mm", String.format("%02d", minutes))
-            .replace("ss", String.format("%02d", seconds));
+
+        return format.replace("HH", String.format("%02d", hours))
+                .replace("mm", String.format("%02d", minutes))
+                .replace("ss", String.format("%02d", seconds));
     }
 
 }
