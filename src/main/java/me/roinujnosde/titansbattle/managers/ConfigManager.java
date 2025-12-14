@@ -202,6 +202,6 @@ public final class ConfigManager {
     }
 
     public String getTimeFormat() {
-        return config.getString("time-format", "HH:mm:ss");
+        return config.getString("time-format", "{HH}:{mm}:{ss}");
     }
 }
