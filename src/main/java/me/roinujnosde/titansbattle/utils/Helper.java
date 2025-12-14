@@ -397,20 +397,58 @@ public class Helper {
     }
 
     /**
-     * Formats time in seconds to a String with the given format
-     * Example: formatTime(3661, "HH:mm:ss") -> "01:01:01"
+     * Formats a duration (in seconds) into a human-readable string using a custom pattern.
+     * <p>
+     * This method is intended for static timers such as:
+     * <ul>
+     *   <li>Event duration</li>
+     *   <li>Elapsed time</li>
+     *   <li>Remaining time until an event ends</li>
+     * </ul>
+     * <p>
+     * It does <b>not</b> represent a time of day. The formatting is based on a total duration
+     * and supports values greater than 24 hours without wrapping.
+     * <p>
+     * If {@code totalSeconds} is less than {@code 0}, the method returns {@code "N/A"}.
      *
-     * @param totalSeconds the total seconds
-     * @param format       the format
-     * @return the formatted time String
+     * <h3>Supported format tokens</h3>
+     * <ul>
+     *   <li><b>{dd}</b> – Days (2 digits, zero-padded)</li>
+     *   <li><b>{HH}</b> – Total hours (zero-padded, can exceed 24)</li>
+     *   <li><b>{hh}</b> – Hour part within the current day (00–23)</li>
+     *   <li><b>{mm}</b> – Minute part within the current hour (00–59)</li>
+     *   <li><b>{ss}</b> – Second part within the current minute (00–59)</li>
+     *   <li><b>{m}</b> – Total minutes (no padding)</li>
+     *   <li><b>{s}</b> – Total seconds (no padding)</li>
+     * </ul>
+     *
+     * @param totalSeconds the total duration in seconds
+     * @param pattern the format pattern using the supported tokens
+     * @return the formatted duration string, or {@code "N/A"} if {@code totalSeconds < 0}
      */
-    public static @NotNull String formatTime(final long totalSeconds, final @NotNull String format) {
-        final long hours = totalSeconds / 3600;
-        final long minutes = (totalSeconds % 3600) / 60;
-        final long seconds = totalSeconds % 60;
+    public static @NotNull String formatTime(final long totalSeconds, final String pattern) {
+        if (totalSeconds < 0) {
+            return "N/A";
+        }
 
-        return format.replace("HH", String.format("%02d", hours))
-                .replace("mm", String.format("%02d", minutes))
-                .replace("ss", String.format("%02d", seconds));
+        final Duration d = Duration.ofSeconds(totalSeconds);
+
+        final long days = d.toDays();
+        final long hours = d.toHours();      // total hours
+        final long minutes = d.toMinutes();  // total minutes
+        final long seconds = d.getSeconds(); // total seconds
+
+        final long hPart = (seconds % 86_400) / 3_600;
+        final long mPart = (seconds % 3_600) / 60;
+        final long sPart = seconds % 60;
+
+        return pattern
+                .replace("{dd}", String.format("%02d", days))
+                .replace("{HH}", String.format("%02d", hours))
+                .replace("{hh}", String.format("%02d", hPart))
+                .replace("{mm}", String.format("%02d", mPart))
+                .replace("{ss}", String.format("%02d", sPart))
+                .replace("{m}", Long.toString(minutes))
+                .replace("{s}", Long.toString(seconds));
     }
 }
