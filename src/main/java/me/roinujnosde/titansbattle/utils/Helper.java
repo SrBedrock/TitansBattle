@@ -395,4 +395,22 @@ public class Helper {
         }
         return treeMap;
     }
+
+    /**
+     * Formats time in seconds to a String with the given format
+     * Example: formatTime(3661, "HH:mm:ss") -> "01:01:01"
+     *
+     * @param totalSeconds the total seconds
+     * @param format       the format
+     * @return the formatted time String
+     */
+    public static @NotNull String formatTime(final long totalSeconds, final @NotNull String format) {
+        final long hours = totalSeconds / 3600;
+        final long minutes = (totalSeconds % 3600) / 60;
+        final long seconds = totalSeconds % 60;
+
+        return format.replace("HH", String.format("%02d", hours))
+                .replace("mm", String.format("%02d", minutes))
+                .replace("ss", String.format("%02d", seconds));
+    }
 }
