@@ -222,10 +222,10 @@ public class TBCommands extends BaseCommand {
         final long maxDurationSeconds = (expiration != null) ? expiration : -1L; // -1 = sem limite / N/A
         final long remainingSeconds = (maxDurationSeconds < 0) ? -1L : Math.max(0, maxDurationSeconds - elapsedSeconds);
 
-        final String timeFormat = configManager.getTimeFormat();
-        final String elapsedTime = Helper.formatTime(elapsedSeconds, timeFormat);
-        final String maxTime = Helper.formatTime(maxDurationSeconds, timeFormat);
-        final String remainingTime = Helper.formatTime(remainingSeconds, timeFormat);
+        final String durationFormat = configManager.getDurationFormat();
+        final String elapsedTime = Helper.formatDuration(elapsedSeconds, durationFormat);
+        final String maxTime = Helper.formatDuration(maxDurationSeconds, durationFormat);
+        final String remainingTime = Helper.formatDuration(remainingSeconds, durationFormat);
 
         if (game.getConfig().isGroupMode()) {
             sender.sendMessage(plugin.getLang("game_status_group", game, Helper.buildStringFrom(game.getGroupParticipants()),

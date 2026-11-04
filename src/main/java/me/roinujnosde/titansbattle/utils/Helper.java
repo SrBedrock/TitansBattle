@@ -331,6 +331,12 @@ public class Helper {
         return sb.toString();
     }
 
+    /**
+     * Formats each group ID in uppercase followed by its participant count in parentheses.
+     *
+     * @param groupIntegerMap the number of participants in each group
+     * @return the formatted groups in map iteration order, or an empty string if there are none
+     */
     public static @NotNull String buildStringFrom(@NotNull Map<Group, Integer> groupIntegerMap) {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<Group, Integer> entry : groupIntegerMap.entrySet()) {
@@ -427,7 +433,7 @@ public class Helper {
      * @param pattern the format pattern using the supported tokens
      * @return the formatted duration string, or {@code "N/A"} if {@code totalSeconds < 0}
      */
-    public static @NotNull String formatTime(final long totalSeconds, final String pattern) {
+    public static @NotNull String formatDuration(final long totalSeconds, final String pattern) {
         if (totalSeconds < 0) {
             return "N/A";
         }

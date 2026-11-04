@@ -201,7 +201,7 @@ public final class ConfigManager {
         return config.getString("date-format");
     }
 
-    public String getTimeFormat() {
-        return config.getString("time-format", "{HH}:{mm}:{ss}");
+    public String getDurationFormat() {
+        return config.getString("duration-format", "{HH}:{mm}:{ss}");
     }
 }

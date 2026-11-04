@@ -83,7 +83,7 @@ date-format: "dd/MM/yyyy"
 #  - "150 minutes"     -> "{m} minutes"
 #
 # If the remaining time is inexistent or negative, "N/A" will be shown.
-time-format: "{HH}:{mm}:{ss}"
+duration-format: "{HH}:{mm}:{ss}"
 
 #Set how many lines should be displayed on those commands
 page-limit:
