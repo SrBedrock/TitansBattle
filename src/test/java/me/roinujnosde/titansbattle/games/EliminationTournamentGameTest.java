@@ -16,6 +16,7 @@ import org.bukkit.plugin.PluginManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.RepetitionInfo;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.*;
@@ -79,6 +80,33 @@ public class EliminationTournamentGameTest {
         when(config.getName()).thenReturn("test-game");
 
         Bukkit.setServer(server);
+    }
+
+    @Test
+    public void expirationClockStartsBeforePreparationEnds() {
+        when(config.isGroupMode()).thenReturn(false);
+        when(config.getPreparationTime()).thenReturn(30);
+        when(config.getExpirationTime()).thenReturn(3600);
+        try {
+            game.start();
+            scheduler.performOneTick();
+            game.onJoin(new Warrior(new FakePlayer(), plugin::getGroupManager));
+            game.onJoin(new Warrior(new FakePlayer(), plugin::getGroupManager));
+            assertEquals(0, game.getBattleStartTime());
+
+            scheduler.performTicks(300);
+            assertFalse(game.isLobby());
+            long expirationStart = game.getBattleStartTime();
+            assertTrue(expirationStart > 0);
+
+            scheduler.performTicks(601);
+            assertEquals(expirationStart, game.getBattleStartTime());
+        } finally {
+            scheduler = new FakeBukkitScheduler();
+            when(server.getScheduler()).thenReturn(scheduler);
+            when(config.getPreparationTime()).thenReturn(0);
+            when(config.getExpirationTime()).thenReturn(0);
+        }
     }
 
     @RepeatedTest(50)

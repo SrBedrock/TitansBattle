@@ -637,6 +637,7 @@ public abstract class BaseGame {
             if (canStartBattle()) {
                 lobby = false;
                 onLobbyEnd();
+                battleStartTime = System.currentTimeMillis();
                 addTask(new GameExpirationTask().runTaskLater(plugin, getConfig().getExpirationTime() * 20));
             } else {
                 finish(true);
@@ -693,8 +694,7 @@ public abstract class BaseGame {
             broadcastKey("preparation_over");
             runCommandsBeforeBattle(getCurrentFighters());
             battle = true;
-            battleStartTime = System.currentTimeMillis();
-            
+
             if (getConfig().isWorldBorder()) {
                 long borderInterval = getConfig().getBorderInterval() * 20L;
                 WorldBorder worldBorder = getConfig().getBorderCenter().getWorld().getWorldBorder();
